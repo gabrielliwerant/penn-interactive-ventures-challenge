@@ -8,7 +8,7 @@ const URL = 'http://api.icndb.com/jokes/random/50';
  * @param {string} url
  * @return {xhr}
  */
-const fetch = function(url) {
+const fetch = url => {
   const xhr = new XMLHttpRequest();
   xhr.open('GET', url);
   xhr.send(null);
@@ -24,10 +24,10 @@ const fetch = function(url) {
  * @param {xhr} xhr
  * @return {hasError: {(boolean|undefined)}, isFinished: {(boolean|undefined)}, data: {(array|undefined)}}
  */
-const getResponse = function(xhr) {
-  const parseData = function(data) { return JSON.parse(data).value; };
+const getResponse = xhr => {
+  const parseData = data => { return JSON.parse(data).value; };
 
-  xhr.onreadystatechange = function() {
+  xhr.onreadystatechange = () => {
     const DONE = 4;
     const OK = 200;
 
@@ -53,7 +53,7 @@ const getResponse = function(xhr) {
  * @param {string} msg
  * @return {void}
  */
- const displayStatus = function(msg) {
+ const displayStatus = msg => {
    var displayEl = window.document.querySelector('#data-container');
 
    displayEl.innerHTML = `<p>${msg}</p>`;
@@ -67,7 +67,7 @@ const getResponse = function(xhr) {
  * @param {array} data
  * @return {void}
  */
-const displayTable = function(data) {
+const displayTable = data => {
   var displayEl = window.document.querySelector('#data-container');
   var table = '<table><thead><tr><th>Id</th><th>Fact</th></thead><tbody>';
 
@@ -94,10 +94,10 @@ const displayTable = function(data) {
  *
  * @return {void}
  */
-const start = function(url) {
+const start = url => {
   const xhr = fetch(url);
   const interval = window.setInterval(
-    function() {
+    () => {
       let parsedResponse = getResponse(xhr);
 
       if (parsedResponse.isFinished) {
