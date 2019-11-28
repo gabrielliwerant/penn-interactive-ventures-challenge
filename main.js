@@ -1,13 +1,14 @@
+const URL = 'http://api.icndb.com/jokes/random/50';
+
 /**
  * fetch
  *
- * Sends GET request to a given url api
+ * Sends GET request to a given url api.
  *
  * @param {string} url
  * @return {xhr}
  */
 const fetch = function(url) {
-  const url = 'http://api.icndb.com/jokes/random/3';
   const xhr = new XMLHttpRequest();
   xhr.open('GET', url);
   xhr.send(null);
@@ -18,7 +19,7 @@ const fetch = function(url) {
 /**
  * getResponse
  *
- * Parses response from an xhr request
+ * Parses response from an xhr request.
  *
  * @param {xhr} xhr
  * @return {hasError: {(boolean|undefined)}, isFinished: {(boolean|undefined)}, data: {(array|undefined)}}
@@ -45,14 +46,28 @@ const getResponse = function(xhr) {
 };
 
 /**
- * display
+ * displayStatus
  *
- * Handles display of data in the DOM
+ * Allows us to display an inital loading message.
+ *
+ * @param {string} msg
+ * @return {void}
+ */
+ const displayStatus = function(msg) {
+   var displayEl = window.document.querySelector('#data-container');
+
+   displayEl.innerHTML = `<p>${msg}</p>`;
+ };
+
+/**
+ * displayTable
+ *
+ * Handles display of data in the DOM.
  *
  * @param {array} data
  * @return {void}
  */
-const display = function(data) {
+const displayTable = function(data) {
   var displayEl = window.document.querySelector('#data-container');
   var table = '<table><thead><tr><th>Id</th><th>Fact</th></thead><tbody>';
 
@@ -75,19 +90,21 @@ const display = function(data) {
  * Acts as initial application bootstrapper, starting any requests and handling
  * eventual display necessary to run application.
  *
+ * @param {string} url Used to fetch initial data set
+ *
  * @return {void}
  */
-const start = function() {
-  const xhr = fetch();
+const start = function(url) {
+  const xhr = fetch(url);
   const interval = window.setInterval(
     function() {
       let parsedResponse = getResponse(xhr);
 
       if (parsedResponse.isFinished) {
-        if (parsedResponse.hasError === true) {
-          display(parsedResponse.data);
+        if (parsedResponse.hasError === false) {
+          displayTable(parsedResponse.data);
         } else {
-          display('Data loading failed.');
+          displayStatus('Data loading failed.');
         }
 
         window.clearInterval(interval);
@@ -97,7 +114,7 @@ const start = function() {
     xhr
   );
 
-  display('Loading Data...');
+  displayStatus('Loading Data...');
 };
 
-start();
+start(URL);
