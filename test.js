@@ -173,6 +173,45 @@ const stub3 = [
 
 const expected3 = [];
 
+const stub4 = {
+  readyState: 4,
+  status: 200,
+  responseText: '{ "type": "success", "value": [ { "id": 1, "joke": "foo", "categories": [] }, { "id": 2, "joke": "bar", "categories": [] } ]  }'
+};
+
+const expected4 = {
+  hasError: false,
+  isFinished: true,
+  data: {
+    totalPages: 1,
+    paginated: [
+      [
+        {
+          id: 1,
+          joke: 'foo',
+          categories: []
+        },
+        {
+          id: 2,
+          joke: 'bar',
+          categories: []
+        }
+      ]
+    ]
+  }
+};
+
+const stub5 = {
+  readyState: 4,
+  status: 400
+};
+
+const expected5 = {
+  hasError: true,
+  isFinished: true,
+  data: 400
+};
+
 console.log('=====BEGIN TESTS=====');
 console.log('');
 
@@ -215,6 +254,26 @@ console.log('');
 console.log('ACTUAL: ', JSON.stringify(getSearchResults(stub3, 'q')));
 console.log('');
 console.log('EXPECTED: ', JSON.stringify(expected3));
+
+console.log('---------------------');
+
+if (JSON.stringify(getResponse(stub4)) === JSON.stringify(expected4)) console.log('PASSED: ');
+else console.log('FAILED: ');
+console.log('getResponse should properly receive and parse a successful http json response');
+console.log('');
+console.log('ACTUAL: ', JSON.stringify(getResponse(stub4)));
+console.log('');
+console.log('EXPECTED: ', JSON.stringify(expected4));
+
+console.log('---------------------');
+
+if (JSON.stringify(getResponse(stub5)) === JSON.stringify(expected5)) console.log('PASSED: ');
+else console.log('FAILED: ');
+console.log('getResponse should properly receive and parse a failed http response');
+console.log('');
+console.log('ACTUAL: ', JSON.stringify(getResponse(stub5)));
+console.log('');
+console.log('EXPECTED: ', JSON.stringify(expected5));
 
 console.log('---------------------');
 
