@@ -126,10 +126,58 @@ const expected1 = {
   ]
 };
 
+const stub2 = [
+  [
+    {
+      id: 1,
+      joke: 'foo'
+    },
+    {
+      id: 2,
+      joke: 'bar'
+    },
+    {
+      id: 3,
+      joke: 'baz'
+    }
+  ]
+];
+
+const expected2 = [
+  {
+    id: 2,
+    joke: 'bar'
+  },
+  {
+    id: 3,
+    joke: 'baz'
+  }
+];
+
+const stub3 = [
+  [
+    {
+      id: 1,
+      joke: 'foo'
+    },
+    {
+      id: 2,
+      joke: 'bar'
+    },
+    {
+      id: 3,
+      joke: 'baz'
+    }
+  ]
+];
+
+const expected3 = [];
+
 console.log('=====BEGIN TESTS=====');
 console.log('');
 
 console.log('---------------------');
+
 if (JSON.stringify(paginateData(stub0)) === JSON.stringify(expected0)) console.log('PASSED: ');
 else console.log('FAILED: ');
 console.log('paginateData should properly transform parsed response into paginated structure when there is enough data for more than one page');
@@ -147,6 +195,27 @@ console.log('');
 console.log('ACTUAL: ', JSON.stringify(paginateData(stub1)));
 console.log('');
 console.log('EXPECTED: ', JSON.stringify(expected1));
+
+console.log('---------------------');
+
+if (JSON.stringify(getSearchResults(stub2, 'b')) === JSON.stringify(expected2)) console.log('PASSED: ');
+else console.log('FAILED: ');
+console.log('getSearchResults should properly filter the total data set to just the results that contain the search text when there are matches');
+console.log('');
+console.log('ACTUAL: ', JSON.stringify(getSearchResults(stub2, 'b')));
+console.log('');
+console.log('EXPECTED: ', JSON.stringify(expected2));
+
+console.log('---------------------');
+
+if (JSON.stringify(getSearchResults(stub3, 'q')) === JSON.stringify(expected3)) console.log('PASSED: ');
+else console.log('FAILED: ');
+console.log('getSearchResults should properly filter the total data set to just the results that contain the search text when there no matches');
+console.log('');
+console.log('ACTUAL: ', JSON.stringify(getSearchResults(stub3, 'q')));
+console.log('');
+console.log('EXPECTED: ', JSON.stringify(expected3));
+
 console.log('---------------------');
 
 console.log('');
