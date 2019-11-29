@@ -11,6 +11,10 @@ tfoot {
   text-align: right;
 }
 
+button {
+  cursor: pointer;
+}
+
 .active {
   font-weight: bolder;
   background-color: #FFF;
