@@ -130,33 +130,47 @@ const displayTable = (data, totalPages, currentPage) => {
 };
 
 /**
- * searchTable
+ * getSearchResults
  *
  * Searches through every row to find if the joke text contains the search input
- * and filter the results in the UI accordingly.
+ * and return the results.
  *
- * @param {array: {id: {number}, joke: {string}}} data
+ * @param {array: {array: {id: {number}, joke: {string}}}} data
+ * @param {string} searchText
+ * @return {array: {id: {number}, joke: {string}}}
+ */
+const getSearchResults = (data, searchText) => {
+  let searchResults = [];
+  let pageResults;
+
+  data.forEach(page => {
+    pageResults = page.reduce((acc, cur) => {
+      if (cur.joke.includes(searchText)) acc.push(cur);
+
+      return acc;
+    }, []);
+
+    searchResults = searchResults.concat(pageResults);
+  });
+
+  return searchResults;
+};
+
+/**
+ * displaySearchResults
+ *
+ * Handles the key event to grab the new search text and then display the
+ * filtered results in the UI.
+ *
+ * @param {array: {array: {id: {number}, joke: {string}}}} data
  * @return {void}
  */
-const searchTable = data => {
+const displaySearchResults = data => {
   const searchEl = window.document.querySelector('#search');
 
   searchEl.addEventListener('keyup', e => {
-    let searchResults = [];
-    let searchText = e.target.value;
-    let pageResults;
-
-    data.forEach(page => {
-      pageResults = page.reduce((acc, cur) => {
-        if (cur.joke.includes(searchText)) acc.push(cur);
-
-        return acc;
-      }, []);
-
-      searchResults = searchResults.concat(pageResults);
-    });
-
-    const paginatedSearchResults = paginateData(searchResults);
+    const searchText = e.target.value;
+    const paginatedSearchResults = paginateData(getSearchResults(data, searchText));
 
     displayTable(paginatedSearchResults.paginated, paginatedSearchResults.totalPages, 1);
   });
@@ -181,7 +195,7 @@ const start = url => {
       if (parsedResponse.isFinished) {
         if (parsedResponse.hasError === false) {
           displayTable(parsedResponse.data.paginated, parsedResponse.data.totalPages, 1);
-          searchTable(parsedResponse.data.paginated);
+          displaySearchResults(parsedResponse.data.paginated);
         } else {
           displayStatus('Data loading failed.');
         }
