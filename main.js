@@ -121,7 +121,8 @@ const displayTable = (data, totalPages, currentPage) => {
     const buttonContainerEl = window.document.querySelector('#footer');
     buttonContainerEl.addEventListener('click', e => {
       let pageNum = parseInt(e.target.id, 10);
-      displayTable(data, totalPages, pageNum);
+
+      if (pageNum) displayTable(data, totalPages, pageNum);
     });
   } else {
     displayEl.innerHTML = '<p>No results</p>';
