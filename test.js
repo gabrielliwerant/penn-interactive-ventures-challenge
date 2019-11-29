@@ -220,9 +220,7 @@ console.log('---------------------');
 if (JSON.stringify(paginateData(stub0)) === JSON.stringify(expected0)) console.log('PASSED: ');
 else console.log('FAILED: ');
 console.log('paginateData should properly transform parsed response into paginated structure when there is enough data for more than one page');
-console.log('');
 console.log('ACTUAL: ', JSON.stringify(paginateData(stub0)));
-console.log('');
 console.log('EXPECTED: ', JSON.stringify(expected0));
 
 console.log('---------------------');
@@ -230,9 +228,7 @@ console.log('---------------------');
 if (JSON.stringify(paginateData(stub1)) === JSON.stringify(expected1)) console.log('PASSED: ');
 else console.log('FAILED: ');
 console.log('paginateData should properly transform parsed response into paginated structure when there is only enough data for one page');
-console.log('');
 console.log('ACTUAL: ', JSON.stringify(paginateData(stub1)));
-console.log('');
 console.log('EXPECTED: ', JSON.stringify(expected1));
 
 console.log('---------------------');
@@ -240,9 +236,7 @@ console.log('---------------------');
 if (JSON.stringify(getSearchResults(stub2, 'b')) === JSON.stringify(expected2)) console.log('PASSED: ');
 else console.log('FAILED: ');
 console.log('getSearchResults should properly filter the total data set to just the results that contain the search text when there are matches');
-console.log('');
 console.log('ACTUAL: ', JSON.stringify(getSearchResults(stub2, 'b')));
-console.log('');
 console.log('EXPECTED: ', JSON.stringify(expected2));
 
 console.log('---------------------');
@@ -250,9 +244,7 @@ console.log('---------------------');
 if (JSON.stringify(getSearchResults(stub3, 'q')) === JSON.stringify(expected3)) console.log('PASSED: ');
 else console.log('FAILED: ');
 console.log('getSearchResults should properly filter the total data set to just the results that contain the search text when there no matches');
-console.log('');
 console.log('ACTUAL: ', JSON.stringify(getSearchResults(stub3, 'q')));
-console.log('');
 console.log('EXPECTED: ', JSON.stringify(expected3));
 
 console.log('---------------------');
@@ -260,9 +252,7 @@ console.log('---------------------');
 if (JSON.stringify(getResponse(stub4)) === JSON.stringify(expected4)) console.log('PASSED: ');
 else console.log('FAILED: ');
 console.log('getResponse should properly receive and parse a successful http json response');
-console.log('');
 console.log('ACTUAL: ', JSON.stringify(getResponse(stub4)));
-console.log('');
 console.log('EXPECTED: ', JSON.stringify(expected4));
 
 console.log('---------------------');
@@ -270,9 +260,7 @@ console.log('---------------------');
 if (JSON.stringify(getResponse(stub5)) === JSON.stringify(expected5)) console.log('PASSED: ');
 else console.log('FAILED: ');
 console.log('getResponse should properly receive and parse a failed http response');
-console.log('');
 console.log('ACTUAL: ', JSON.stringify(getResponse(stub5)));
-console.log('');
 console.log('EXPECTED: ', JSON.stringify(expected5));
 
 console.log('---------------------');
