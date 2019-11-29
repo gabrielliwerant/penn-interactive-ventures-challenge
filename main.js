@@ -25,7 +25,18 @@ const fetch = url => {
  * @return {hasError: {(boolean|undefined)}, isFinished: {(boolean|undefined)}, data: {(array|undefined)}}
  */
 const getResponse = xhr => {
-  const parseData = data => { return JSON.parse(data).value; };
+  const parseData = data => JSON.parse(data).value;
+  const paginateData = data => {
+    const PAGE_SIZE = 10;
+    const paginated = [];
+    const totalPages = Math.ceil(data.length / PAGE_SIZE);
+
+    for (let i = 0; i < totalPages; i += 1) {
+      paginated.push(data.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
+    }
+
+    return { totalPages, paginated };
+  };
 
   xhr.onreadystatechange = () => {
     const DONE = 4;
@@ -33,7 +44,7 @@ const getResponse = xhr => {
 
     if (xhr.readyState === DONE) {
       if (xhr.status === OK) {
-        return { hasError: false, isFinished: true, data: parseData(xhr.responseText) };
+        return { hasError: false, isFinished: true, data: paginateData(parseData(xhr.responseText)) };
       } else {
         return { hasError: true, isFinished: true, data: xhr.status };
       }
@@ -65,20 +76,43 @@ const getResponse = xhr => {
  * Handles display of data in the DOM.
  *
  * @param {array} data
+ * @param {number} totalPages
+ * @param {number} currentPage
  * @return {void}
  */
-const displayTable = data => {
-  var displayEl = window.document.querySelector('#data-container');
-  var table = '<table><thead><tr><th>Id</th><th>Fact</th></thead><tbody>';
+const displayTable = (data, totalPages, currentPage) => {
+  const displayEl = window.document.querySelector('#data-container');
+  const page = data[currentPage - 1];
+  const onClick = () => console.log('clicked');
+  let table = '<table><thead><tr><th>Id</th><th>Fact</th></thead>';
 
-  if (data.length > 0) {
-    data.forEach(d => {
+  if (page.length > 0) {
+    // Build table footer
+    table += '<tfoot id="footer"><tr><td colspan="2">Pages: ';
+    for (let i = 0; i < totalPages; i += 1) {
+      let className = (i + 1) === currentPage ? 'active' : 'inactive';
+      table += `<button id="${i + 1}" class="${className}">${i + 1}</button>`;
+    }
+    table += '</td></tr></tfoot>';
+
+    // Build table body rows
+    table += '<tbody>';
+    page.forEach(d => {
       table += '<tr><td>' + d.id + '</td><td>' + d.joke + '</td></tr>'
     });
+    table += '</tbody>';
 
-    table += '</tbody></table>';
+    // Close table
+    table += '</table>';
 
     displayEl.innerHTML = table;
+
+    // Attach click event handlers to pagination buttons
+    const buttonContainerEl = window.document.querySelector('#footer');
+    buttonContainerEl.addEventListener('click', e => {
+      let pageNum = parseInt(e.target.id, 10);
+      displayTable(data, totalPages, pageNum);
+    });
   } else {
     displayEl.innerHTML = '<p>No results</p>';
   }
@@ -102,7 +136,7 @@ const start = url => {
 
       if (parsedResponse.isFinished) {
         if (parsedResponse.hasError === false) {
-          displayTable(parsedResponse.data);
+          displayTable(parsedResponse.data.paginated, parsedResponse.data.totalPages, 1);
         } else {
           displayStatus('Data loading failed.');
         }

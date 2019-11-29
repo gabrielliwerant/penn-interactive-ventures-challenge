@@ -1,4 +1,17 @@
+table {
+  width: 100%;
+}
+
 td, th {
   border: 1px solid #999;
   padding: 0.5rem;
+}
+
+tfoot {
+  text-align: right;
+}
+
+.active {
+  font-weight: bolder;
+  background-color: #FFF;
 }
