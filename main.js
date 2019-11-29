@@ -1,4 +1,5 @@
 const URL = 'http://api.icndb.com/jokes/random/50';
+const PAGE_SIZE = 10;
 
 /**
  * fetch
@@ -17,6 +18,26 @@ const fetch = url => {
 };
 
 /**
+ * paginateData
+ *
+ * Splits data up into separate arrays based on the targeted page size, and
+ * records the total number of pages for pagination purposes.
+ *
+ * @param {array: {id: {number}, joke: {string}}} data
+ * @return {totalPages: {number}, paginated: {array: {id: {number}, joke: {string}}}}
+ */
+const paginateData = data => {
+  const paginated = [];
+  const totalPages = Math.ceil(data.length / PAGE_SIZE);
+
+  for (let i = 0; i < totalPages; i += 1) {
+    paginated.push(data.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
+  }
+
+  return { totalPages, paginated };
+};
+
+/**
  * getResponse
  *
  * Parses response from an xhr request.
@@ -26,17 +47,6 @@ const fetch = url => {
  */
 const getResponse = xhr => {
   const parseData = data => JSON.parse(data).value;
-  const paginateData = data => {
-    const PAGE_SIZE = 10;
-    const paginated = [];
-    const totalPages = Math.ceil(data.length / PAGE_SIZE);
-
-    for (let i = 0; i < totalPages; i += 1) {
-      paginated.push(data.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
-    }
-
-    return { totalPages, paginated };
-  };
 
   xhr.onreadystatechange = () => {
     const DONE = 4;
@@ -65,7 +75,7 @@ const getResponse = xhr => {
  * @return {void}
  */
  const displayStatus = msg => {
-   var displayEl = window.document.querySelector('#data-container');
+   const displayEl = window.document.querySelector('#data-container');
 
    displayEl.innerHTML = `<p>${msg}</p>`;
  };
@@ -82,11 +92,11 @@ const getResponse = xhr => {
  */
 const displayTable = (data, totalPages, currentPage) => {
   const displayEl = window.document.querySelector('#data-container');
-  const page = data[currentPage - 1];
+  const page = data.length > 0 ? data[currentPage - 1] : false;
   const onClick = () => console.log('clicked');
   let table = '<table><thead><tr><th>Id</th><th>Fact</th></thead>';
 
-  if (page.length > 0) {
+  if (page) {
     // Build table footer
     table += '<tfoot id="footer"><tr><td colspan="2">Pages: ';
     for (let i = 0; i < totalPages; i += 1) {
@@ -119,6 +129,39 @@ const displayTable = (data, totalPages, currentPage) => {
 };
 
 /**
+ * searchTable
+ *
+ * Searches through every row to find if the joke text contains the search input
+ * and filter the results in the UI accordingly.
+ *
+ * @param {array: {id: {number}, joke: {string}}} data
+ * @return {void}
+ */
+const searchTable = data => {
+  const searchEl = window.document.querySelector('#search');
+
+  searchEl.addEventListener('keyup', e => {
+    let searchResults = [];
+    let searchText = e.target.value;
+    let pageResults;
+
+    data.forEach(page => {
+      pageResults = page.reduce((acc, cur) => {
+        if (cur.joke.includes(searchText)) acc.push(cur);
+
+        return acc;
+      }, []);
+
+      searchResults = searchResults.concat(pageResults);
+    });
+
+    const paginatedSearchResults = paginateData(searchResults);
+
+    displayTable(paginatedSearchResults.paginated, paginatedSearchResults.totalPages, 1);
+  });
+};
+
+/**
  * start
  *
  * Acts as initial application bootstrapper, starting any requests and handling
@@ -137,6 +180,7 @@ const start = url => {
       if (parsedResponse.isFinished) {
         if (parsedResponse.hasError === false) {
           displayTable(parsedResponse.data.paginated, parsedResponse.data.totalPages, 1);
+          searchTable(parsedResponse.data.paginated);
         } else {
           displayStatus('Data loading failed.');
         }
@@ -144,7 +188,7 @@ const start = url => {
         window.clearInterval(interval);
       }
     },
-    3000,
+    1500,
     xhr
   );
 
